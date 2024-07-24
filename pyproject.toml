@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-gitlab-artifacts"
+dynamic = ["version"]
+dependencies = [
+  "packaging>=20",
+  "setuptools",
+  "python-gitlab==4.4"
+]
+
+requires-python = ">=3.10"
+authors = [
+  {name = "Efrain Calderon", email = "efrain.calderon.estrada@gmail.com"},
+]
+maintainers = [
+  {name = "Efrain Calderon", email = "efrain.calderon.estrada@gmail.com"},
+]
+description = "Tool for downloading artifacts"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["artifacts", "CI", "CD", "gitlab", "pipeline"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Artifacts",
+  "Topic :: System :: Software Distribution",
+  "Topic :: Utilities",
+]
+
+[project.optional-dependencies]
+test = [
+  "build",
+  "pytest",
+  "rich",
+  'typing-extensions; python_version < "3.11"',
+  "wheel",
+]
+toml = [
+]
+
+[project.urls]
+repository = "https://github.com/efra-mx/python-gitlab-artifacts/"
+
+[project.scripts]
+gitlab-artifacts = "gitlab_artifacts.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "gitlab_artifacts._version.__version__" }
+
+[tool.semantic_release]
+branch = "main"
+build_command = """
+    python -m pip install build~=0.10.0
+    python -m build .
+"""
+version_variables = [
+    "gitlab_artifacts/_version.py:__version__",
+]
+commit_message = "chore: release v{version}"
+
+[project.entry-points."spam.magical"]
+tomatoes = "spam:main_tomatoes"
+
+[tool.setuptools_scm]
+version_file = "gitlab_artifacts/_version.py"
+
+#[tool.setuptools.packages.find]
+#where = ["src"]
+#namespaces = false

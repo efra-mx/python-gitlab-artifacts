@@ -1,0 +1,6 @@
+__author__ = "Efrain Calderon"
+__copyright__ = "Copyright 2024 Efrain Calderon"
+__email__ = "efrain.calderon@gmail.com"
+__license__ = "LGPL3"
+__title__ = "python-gitlab-artifacts"
+__version__ = "0.1.0"
