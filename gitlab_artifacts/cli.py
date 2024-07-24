@@ -66,7 +66,7 @@ def parse_add_args(parser:argparse.ArgumentParser):
     parser.add_argument(
         '--server',
         default=os.environ.get('GITLAB_URL', default='https://gitlab.com'),
-        help='Gitlab server URL, default: $GITLAB_URL or https://gitlab.com')
+        help='Gitlab server URL, [env var: GITLAB_URL] or https://gitlab.com')
 
     tokens = parser.add_mutually_exclusive_group()
     tokens.add_argument(
