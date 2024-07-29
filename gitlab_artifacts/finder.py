@@ -38,13 +38,28 @@ class PipelineJobFinder:
                 break
         return job
 
-    def find_commit(self, commit_id=None, tag=None, pipeline_id=0):
+    def find_commit(self, commit_id=None, tag=None, pipeline_id=0, branch_name=None):
         _tag = None
         commit = None
         mode = "Commit"
 
         try:
-            if commit_id:
+            if branch_name:
+                page = 1
+                idx = 0
+                idx_in_page = 0
+                if "~" in commit_id:
+                    try:
+                        idx = int(commit_id.split('~')[1])
+                    except Exception:
+                        idx = 1
+                    page = idx // 10 + 1
+                    idx_in_page  = idx % 10
+                commits = self.project.commits.list(ref_name=branch_name, per_page=10, page=page)
+                commit = commits[idx_in_page]
+                # get full commit
+                commit = self.project.commits.get(commit.id)
+            elif commit_id:
                 commit = self.project.commits.get(commit_id)
             elif tag and not commit:
                 mode = "Tag"
@@ -79,8 +94,8 @@ class PipelineJobFinder:
         return pipeline
 
     # Find the job instance
-    def find(self, commit='', tag='', pipeline_id=0, job_name=''):
-        commit_obj = self.find_commit(commit, tag, pipeline_id)
+    def find(self, commit='', tag='', pipeline_id=0, job_name='', branch_name=''):
+        commit_obj = self.find_commit(commit, tag, pipeline_id, branch_name)
         pipeline = self.find_commit_pipeline(commit_obj, pipeline_id)
         print(f"tag: {tag}")
         print(f"commit: {commit_obj.short_id}: {commit_obj.title}")

@@ -43,6 +43,9 @@ def parse_add_args(parser:argparse.ArgumentParser):
         'project',
         help='Project name')
     parser.add_argument(
+        '--branch', default='', dest='branch_name',
+        help='Branch name')
+    parser.add_argument(
         '-c', '--commit', default='',
         help='Pipeline number')
     parser.add_argument(
@@ -100,6 +103,7 @@ def download_artifacts(server:str=None,
                        oauth_token:str=None,
                        job_token:str=None,
                        group='', project='',
+                       branch_name='',
                        commit='', tag='', pipeline_id=0, job_name='',
                        zip_path='', output='',
                        verbose=False,
@@ -137,7 +141,7 @@ def download_artifacts(server:str=None,
         print("\nSearching for jobs in latest pipeline...")
 
     finder = PipelineJobFinder(client)
-    pipeline_job = finder.find(commit, tag, pipeline_id, job_name)
+    pipeline_job = finder.find(commit, tag, pipeline_id, job_name, branch_name=branch_name)
     downloader = ArtifactDownloader(client, pipeline_job)
     downloader.download(zip_path, output)
     return pipeline_job
