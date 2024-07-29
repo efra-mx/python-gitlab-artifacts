@@ -7,6 +7,7 @@
 import gitlab
 import gitlab.exceptions
 import gitlab.v4.objects
+from gitlab.v4.objects import *
 from .exceptions import *
 from .client import *
 
@@ -19,8 +20,8 @@ class PipelineJobFinder:
         self.project.lazy = True
 
     def get_job_names(self, pipeline):
-        job_objs = pipeline.jobs.list()
-        jobs = [ j.name for j in job_objs ]
+        jobs = pipeline.jobs.list()
+        jobs = [ j.name for j in jobs ]
 
         return jobs
 
@@ -67,40 +68,36 @@ class PipelineJobFinder:
 
 
     def find_commit_pipeline(self, commit, pipeline_id=0):
-        pipeline = None
-
-        if commit:
-            pipeline = self.project.pipelines.get(commit.last_pipeline['id'])
-
-        # fetch the pipeline if it does not exist
-        if pipeline_id > 0 and not pipeline:
-            pipeline = self.project.pipelines.get(pipeline_id)
-
-        if not pipeline:
+        # find the latest pipeline if not specified
+        if (not pipeline_id) and commit:
+            pipeline_id = commit.last_pipeline['id']
+        
+        if not pipeline_id:
             raise FileNotFoundError("No valid pipeline found")
+        pipeline = self.project.pipelines.get(pipeline_id)
 
         return pipeline
 
     # Find the job instance
-    def find(self, commit='', tag='', pipeline=0, job=''):
-        commit_obj = self.find_commit(commit, tag, pipeline)
-        pipeline_obj = self.find_commit_pipeline(commit_obj, pipeline)
+    def find(self, commit='', tag='', pipeline_id=0, job_name=''):
+        commit_obj = self.find_commit(commit, tag, pipeline_id)
+        pipeline = self.find_commit_pipeline(commit_obj, pipeline_id)
         print(f"tag: {tag}")
         print(f"commit: {commit_obj.short_id}: {commit_obj.title}")
-        print(f"pipeline.id: {pipeline_obj.id}")
-        job_obj = self._find_job(pipeline_obj, job)
-        if job_obj:
-            print(f"job.id: {job_obj.id}")
-            print(f"job.name: {job_obj.name}")
-            if not job_obj.artifacts:
-                raise JobArtifactsNotFound(job_obj.name)
+        print(f"pipeline.id: {pipeline.id}")
+        job = self._find_job(pipeline, job_name)
+        if job:
+            print(f"job.id: {job.id}")
+            print(f"job.name: {job.name}")
+            if not job.artifacts:
+                raise JobArtifactsNotFound(job.name)
         else:
             print("Available jobs:")
-            [ print('\t', j.name) for j in pipeline_obj.jobs.list() if j.status == 'success' ]
+            [ print('\t', j.name) for j in pipeline.jobs.list() if j.status == 'success' ]
             print("Jobs with no artifacts:")
-            [ print('\t', j.name) for j in pipeline_obj.jobs.list() if not j.artifacts ]
+            [ print('\t', j.name) for j in pipeline.jobs.list() if not j.artifacts ]
             print("Manual jobs:")
-            [ print('\t', j.name) for j in pipeline_obj.jobs.list() if j.status == 'manual' ]
-            raise PipelineJobNotFound(job)
-        return job_obj
+            [ print('\t', j.name) for j in pipeline.jobs.list() if j.status == 'manual' ]
+            raise PipelineJobNotFound(job_name)
+        return job
 

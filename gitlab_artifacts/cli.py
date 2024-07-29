@@ -46,11 +46,13 @@ def parse_add_args(parser:argparse.ArgumentParser):
         '-c', '--commit', default='',
         help='Pipeline number')
     parser.add_argument(
-        '-p', '--pipeline', default=0, type=int,
+        '-p', '--pipeline', default=0, type=int, dest='pipeline_id',
         help='Pipeline number')
     parser.add_argument(
-        '--job', default='build',
-        help='CI/CD job name')
+        '--job',
+        default=os.environ.get('GITLAB_DEFAULT_JOB', default='builds'),
+        dest='job_name',
+        help='CI/CD job name, [env var: GITLAB_DEFAULT_JOB] or build')
     parser.add_argument(
         '--tag', default='',
         help='Repository tag')
@@ -98,7 +100,7 @@ def download_artifacts(server:str=None,
                        oauth_token:str=None,
                        job_token:str=None,
                        group='', project='',
-                       commit='', tag='', pipeline=0, job='',
+                       commit='', tag='', pipeline_id=0, job_name='',
                        zip_path='', output='',
                        verbose=False,
                        **kwargs):
@@ -125,17 +127,17 @@ def download_artifacts(server:str=None,
     try:
         if tag:
             # Download the artifacts from the specified pipelines
-            downloader = ArtifactDownloader(client, ref_name=tag, job_name=job)
+            downloader = ArtifactDownloader(client, ref_name=tag, job_name=job_name)
             downloader.download(zip_path, output)
             return
 
     except client.exceptions.GitlabError as e:
         # Fallback, try to get the latest commit's pipeline
-        print(f"WARNING: The tag/commit {tag} does not have the artifact {job}")
+        print(f"WARNING: The tag/commit {tag} does not have the artifact {job_name}")
         print("\nSearching for jobs in latest pipeline...")
 
     finder = PipelineJobFinder(client)
-    pipeline_job = finder.find(commit, tag, pipeline, job)
+    pipeline_job = finder.find(commit, tag, pipeline_id, job_name)
     downloader = ArtifactDownloader(client, pipeline_job)
     downloader.download(zip_path, output)
     return pipeline_job
