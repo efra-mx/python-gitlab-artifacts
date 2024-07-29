@@ -155,9 +155,9 @@ def main():
     args = parse_args()
     try:
         download_artifacts(**vars(args))
-    except ObjectNotFound as e:
+    except (ObjectNotFound, gitlab.exceptions.GitlabGetError) as e:
         print(e)
-        print("Failed")
+        print("Failed1")
         sys.exit(1)
     except Exception as e:
         print(e)
