@@ -92,14 +92,15 @@ def parse_add_args(parser:argparse.ArgumentParser):
         required=False,
     )
     parser.add_argument(
-        '--cert', default=os.environ.get('GITLAB_SSL_VERIFY', default=''), dest='cert_file',
+        '--ca-cert', default=os.environ.get('GITLAB_SSL_VERIFY', default=''),
+        dest='ca_cert_file',
         help='Gitlab server SSL certificate [env var: GITLAB_SSL_VERIFY]')
 
 
 
 def download_artifacts(server:str=None,
                        private_token:str=None,
-                       cert_file:str=None,
+                       ca_cert_file:str=None,
                        oauth_token:str=None,
                        job_token:str=None,
                        group='', project='',
@@ -109,10 +110,9 @@ def download_artifacts(server:str=None,
                        verbose=False,
                        **kwargs):
 
-    if cert_file:
+    if ca_cert_file:
         session = requests.Session()
-        session.verify = True
-        session.cert = cert_file
+        session.verify = ca_cert_file
         ssl_verify = True
     else:
         session = None
