@@ -21,17 +21,22 @@ class GitlabClient:
                  job_token:str=None,
                  session=None,
                  ssl_verify:bool=False,
+                 verbose=False
                  ):
         self.private_token = private_token
         self.oauth_token = oauth_token
         self.job_token = job_token
+        self.project = None
         if not gl:
             gl = gitlab.Gitlab(server, private_token, session=session,
                                ssl_verify=ssl_verify)
         self.gl = gl
-        self.project = self._find_project(group, proj)
+        if verbose:
+            gl.enable_debug()
+        if group and proj:
+            self.project = self.find_project(group, proj)
 
-    def _find_project(self, group, proj):
+    def find_project(self, group, proj):
         # Find the groups
         groups = self.gl.groups.list(search=group)
         _group = None
@@ -54,7 +59,7 @@ class GitlabClient:
 
         if not _project:
             raise ProjectNotFound(proj)
-        return _project
+        self.project = _project
 
     def get_tags(self):
         tag_objs = self.project.tags.list(all=True)

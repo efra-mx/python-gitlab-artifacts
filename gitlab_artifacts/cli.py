@@ -118,16 +118,17 @@ def download_artifacts(server:str=None,
         session = None
         ssl_verify = False
 
-    client = GitlabClient(server=server, group=group, proj=project,
+    client = GitlabClient(server=server,
                           private_token=private_token,
                           oauth_token=oauth_token,
                           job_token=job_token,
                           session=session,
-                          ssl_verify=ssl_verify)
-    if verbose:
-        client.gl.enable_debug()
+                          ssl_verify=ssl_verify,
+                          verbose=verbose)
 
     pipeline_job = None
+    client.find_project(group=group, proj=project)
+
     try:
         if tag:
             # Download the artifacts from the specified pipelines
