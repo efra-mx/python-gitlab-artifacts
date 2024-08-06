@@ -108,6 +108,7 @@ def download_artifacts(server:str=None,
                        commit='', tag='', pipeline_id=0, job_name='',
                        zip_path='', output='',
                        verbose=False,
+                       pristine=False,
                        **kwargs):
 
     if ca_cert_file:
@@ -133,7 +134,7 @@ def download_artifacts(server:str=None,
         if tag:
             # Download the artifacts from the specified pipelines
             downloader = ArtifactDownloader(client, ref_name=tag, job_name=job_name)
-            downloader.download(zip_path, output)
+            downloader.download(zip_path, output, pristine=pristine)
             return
 
     except client.exceptions.GitlabError as e:
@@ -144,7 +145,7 @@ def download_artifacts(server:str=None,
     finder = PipelineJobFinder(client)
     pipeline_job = finder.find(commit, tag, pipeline_id, job_name, branch_name=branch_name)
     downloader = ArtifactDownloader(client, pipeline_job)
-    downloader.download(zip_path, output)
+    downloader.download(zip_path, output, pristine=pristine)
     return pipeline_job
 
 

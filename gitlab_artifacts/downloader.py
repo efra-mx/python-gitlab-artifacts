@@ -49,7 +49,7 @@ class ArtifactDownloader:
         print("output file:", out_file_path)
         return out_file_path
 
-    def download(self, zip_path='', output='', **kwargs):
+    def download(self, zip_path='', output='', pristine=True, **kwargs):
         all_files = []
         zip_file = None
         zip_file = self._download_artifacts_zip(zip_path)
@@ -59,7 +59,7 @@ class ArtifactDownloader:
 
         zr = ZipReader(zip_file)
         if output:
-            zr.unzip(output)
+            zr.unzip(output, pristine=pristine)
             print()
             zr.list_files()
             all_files = zr.files
