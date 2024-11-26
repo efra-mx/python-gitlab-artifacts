@@ -137,7 +137,7 @@ def download_artifacts(server:str=None,
             downloader.download(zip_path, output, pristine=pristine)
             return
 
-    except client.exceptions.GitlabError as e:
+    except gitlab.exceptions.GitlabError as e:
         # Fallback, try to get the latest commit's pipeline
         print(f"WARNING: The tag/commit {tag} does not have the artifact {job_name}")
         print("\nSearching for jobs in latest pipeline...")
@@ -159,7 +159,8 @@ def main():
         download_artifacts(**vars(args))
     except (ObjectNotFound, gitlab.exceptions.GitlabGetError) as e:
         print(e)
-        print("Failed1")
+        print("Failed")
+        traceback.print_exc()
         sys.exit(1)
     except Exception as e:
         print(e)
