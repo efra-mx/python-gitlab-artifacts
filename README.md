@@ -2,6 +2,8 @@
 
 Tools for fetching Gitlab artifacts
 
+It is base on python-gitlab
+
 # Usage
 
 ```
@@ -39,3 +41,11 @@ options:
                         GitLab CI job token [env var: CI_JOB_TOKEN]
   --cert CERT_FILE      Gitlab server SSL certificate [env var: GITLAB_SSL_VERIFY]  
   ```
+
+  # Build
+
+  ```
+  pip install Build
+  python -m Build
+  ```
+
