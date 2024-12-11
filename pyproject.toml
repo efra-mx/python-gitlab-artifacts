@@ -32,8 +32,8 @@ classifiers = [
   "Topic :: Utilities",
 ]
 
+requires-python = ">=3.10"
 dependencies = [
-  "python>=3.10",
   "packaging>=20",
   "setuptools",
   "python-gitlab==4.4",
@@ -58,6 +58,7 @@ gitlab-artifacts = "gitlab_artifacts.cli:main"
 version = { attr = "gitlab_artifacts._version.__version__" }
 
 [tool.setuptools.packages.find]
+where = ["."]
 exclude = ["docs*", "tests*"]
 
 [tool.semantic_release]
@@ -66,3 +67,14 @@ build_command = """
     python -m pip install build~=0.10.0
     python -m build .
 """
+
+version_variables = [
+    "gitlab_artifacts/_version.py:__version__",
+]
+commit_message = "chore: release v{version}"
+
+[project.entry-points."spam.magical"]
+tomatoes = "spam:main_tomatoes"
+
+[tool.setuptools_scm]
+version_file = "gitlab_artifacts/_version.py"
