@@ -13,7 +13,7 @@ maintainers = [
   {name = "Efrain Calderon", email = "efrain.calderon.estrada@gmail.com"},
 ]
 readme = "README.md"
-license = {file = "LICENSE"}
+license = {file = "MIT"}
 keywords = ["artifacts", "CI", "CD", "gitlab", "pipeline"]
 classifiers = [
   "Development Status :: 4 - Beta",
