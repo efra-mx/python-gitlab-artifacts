@@ -36,9 +36,9 @@ class GitlabClient:
         if group and proj:
             self.project = self.find_project(group, proj)
 
-    def find_project(self, group, proj):
+    def find_project(self, group, proj, per_page=50):
         # Find the groups
-        groups = self.gl.groups.list(search=group)
+        groups = self.gl.groups.list(search=group, per_page=50)
         _group = None
         for item in groups:
             if item.name.lower() == group.lower():

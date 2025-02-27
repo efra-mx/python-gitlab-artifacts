@@ -20,7 +20,7 @@ class PipelineJobFinder:
         self.project.lazy = True
 
     def get_job_names(self, pipeline):
-        jobs = pipeline.jobs.list()
+        jobs = pipeline.jobs.list(all=True)
         jobs = [ j.name for j in jobs ]
 
         return jobs
@@ -31,7 +31,7 @@ class PipelineJobFinder:
 
         proj = self.gl.projects.get(pipeline.project_id)
         job = None
-        jobs = pipeline.jobs.list()
+        jobs = pipeline.jobs.list(all=True)
         for j in jobs:
             if j.name == job_name and j.status == 'success':
                 job = proj.jobs.get(j.id)
@@ -86,7 +86,7 @@ class PipelineJobFinder:
         # find the latest pipeline if not specified
         if (not pipeline_id) and commit:
             pipeline_id = commit.last_pipeline['id']
-        
+
         if not pipeline_id:
             raise FileNotFoundError("No valid pipeline found")
         pipeline = self.project.pipelines.get(pipeline_id)
@@ -107,12 +107,13 @@ class PipelineJobFinder:
             if not job.artifacts:
                 raise JobArtifactsNotFound(job.name)
         else:
+            jobs = pipeline.jobs.list(all=True)
             print("Available jobs:")
-            [ print('\t', j.name) for j in pipeline.jobs.list() if j.status == 'success' ]
+            [ print('\t', j.name) for j in jobs if j.status == 'success' ]
             print("Jobs with no artifacts:")
-            [ print('\t', j.name) for j in pipeline.jobs.list() if not j.artifacts ]
+            [ print('\t', j.name) for j in jobs if not j.artifacts ]
             print("Manual jobs:")
-            [ print('\t', j.name) for j in pipeline.jobs.list() if j.status == 'manual' ]
+            [ print('\t', j.name) for j in jobs if j.status == 'manual' ]
             raise PipelineJobNotFound(job_name)
         return job
 
